@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:camel="http://camel.apache.org/schema/spring"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+	<bean id="testBean" class="com.javacodegeeks.camel.TestBean" />
+	<bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="brokerURL" value="vm://localhost?broker.persistent=false" />
+	</bean>
+	<bean id="pooledConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory"
+		init-method="start" destroy-method="stop">
+		<property name="maxConnections" value="8" />
+		<property name="connectionFactory" ref="jmsConnectionFactory" />
+	</bean>
+
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="pooledConnectionFactory" />
+	</bean>
+
+
+	<camel:camelContext xmlns="http://camel.apache.org/schema/spring">
+		<camel:endpoint id="testBeanUriHelloMethod" uri="bean:testBean?method=hello" />
+		<camel:route>
+			<camel:from uri="activemq:queue:start" />
+			<camel:to ref="testBeanUriHelloMethod" />
+			<camel:to uri="stream:out" />
+		</camel:route>
+	</camel:camelContext>
+
+	<bean id="activeMqRouteBuilder" class="com.javacodegeeks.camel.routes.ActiveMqRouteBuilder" />
+
+	<camel:camelContext xmlns="http://camel.apache.org/schema/spring">
+		<camel:routeBuilder ref="activeMqRouteBuilder" />
+	</camel:camelContext>
+
+<!-- 	<bean id="myProcessor" class="com.javacodegeeks.camel.MyProcessor" /> -->
+<!-- 	<camel:camelContext xmlns="http://camel.apache.org/schema/spring"> -->
+
+<!-- 		<camel:route> -->
+<!-- 			<camel:from uri="timer:foo?period=1s" /> -->
+<!-- 			<process ref="myProcessor" /> -->
+<!-- 			<camel:to uri="stream:out" /> -->
+<!-- 		</route> -->
+
+<!-- 	</camel:camelContext> -->
+
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="oracle.jdbc.OracleDriver" />
+		<property name="url" value="jdbc:oracle:thin:@faisca:1521:deletre" />
+		<property name="username" value="ADMTOT02" />
+		<property name="password" value="ADMTOT02" />
+	</bean>
+
+	<bean id="rowProcessor" class="com.javacodegeeks.camel.RowProcessor">
+	</bean>
+
+	<camel:camelContext xmlns="http://camel.apache.org/schema/spring">
+		<camel:route>
+			<camel:from uri="timer:timerDatabase?period=2s" />
+			<camel:log message="select from pleito" />
+			<camel:setBody>
+				<camel:constant>
+					SELECT * FROM PLEITO
+				</camel:constant>
+			</camel:setBody>
+			<camel:to uri="jdbc:dataSource" />
+			<camel:log message="camel:split rows" />
+			<camel:split>
+				<simple>${body}</simple>
+				<camel:log message="process row ${body}" />
+				<camel:to uri="bean:rowProcessor" />
+				<camel:to uri="stream:out" />
+			</camel:split>
+		</camel:route>
+	</camel:camelContext>
+</beans>
