@@ -60,8 +60,8 @@
 	<!-- <property name="driverClassName" value="oracle.jdbc.OracleDriver" /> -->
 	<!-- <property name="url" value="jdbc:oracle:thin:@faisca:1521:deletre" 
 		/> -->
-	<!-- <property name="username" value="ADMTOT02" /> -->
-	<!-- <property name="password" value="ADMTOT02" /> -->
+	<!-- <property name="username" value="" /> -->
+	<!-- <property name="password" value="" /> -->
 	<!-- </bean> -->
 
 	<!-- <bean id="rowProcessor" class="com.javacodegeeks.camel.RowProcessor"> -->
