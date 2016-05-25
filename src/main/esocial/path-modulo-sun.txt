@@ -1,0 +1,3 @@
+<path name="com/sun/org/apache/xerces/internal/dom"/>
+<path name="com/sun/org/apache/xerces/internal/xni"/>
+<path name="com/sun/org/apache/xerces/internal/jaxp"/>
