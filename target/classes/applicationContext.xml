@@ -60,8 +60,8 @@
 	<!-- <property name="driverClassName" value="oracle.jdbc.OracleDriver" /> -->
 	<!-- <property name="url" value="jdbc:oracle:thin:@faisca:1521:deletre" 
 		/> -->
-	<!-- <property name="username" value="ADMTOT02" /> -->
-	<!-- <property name="password" value="ADMTOT02" /> -->
+	<!-- <property name="username" value="" /> -->
+	<!-- <property name="password" value="" /> -->
 	<!-- </bean> -->
 
 	<!-- <bean id="rowProcessor" class="com.javacodegeeks.camel.RowProcessor"> -->
@@ -162,7 +162,7 @@
 			<from id="_fromEntradaXMLEventosAdmissaoRoute" uri="direct:geraLoteXMLEventosAdmissaoRoute" />
 			<split id="_splitEventosAdmissao" strategyRef="aggregatorStrategy"
 				streaming="true">
-				<tokenize group="50" token="evento" xml="true" />
+				<tokenize group="5" token="evento" xml="true" />
 				<log id="_logSplitXMLLoteEventosAdmissao" message="Gerando Lote [Número:${header.CamelSplitIndex}]" />
 				<to id="_toFreeMarkerEnvioLoteEventosAdmissao" uri="freemarker:EnvioLoteEventosAdmissao.ftl" />
 				<to id="_to1" uri="validator:XSD/Envio/EnvioLoteEventos-v1_1_0.xsd" />
@@ -174,8 +174,7 @@
 		</route>
 		<route id="_assinaLoteXMLEventosAdmissaoRoute">
 			<from id="_fromLotesXMLEventosAdmissao" uri="file:{{file.directory}}/LotesXMLEventosAdmissao" />
-			<log id="_logAssinaturaLotesXMLEventosAdmissao" message="Assinando 
-			Lote [Arquivo: ${file:name}]" />
+			<log id="_logAssinaturaLotesXMLEventosAdmissao" message="Assinando Lote [Arquivo: ${file:name}]" />
 			<to id="_toAssinaXMLEventosAdmissao"
 				uri="xmlsecurity:sign://detached?keyAccessor=#signatureAccessor&amp;plainText=true" />
 			<multicast id="_multicastWSBD">
@@ -196,18 +195,18 @@
 				</setHeader>
 			</wireTap>
 			<to id="_toFreemarkerEnviaLoteSOAPRequestTemplate" uri="freemarker:EnviaLoteSOAPRequestTemplate.ftl" />
-			<log id="_logEnviandoLoteXMLEventosAdmissao"
-				message="Enviando Lote 
-				Eventos Admissão [Lote: ${file:name}]" />
-			<to id="_toCXFServicoEnviarLoteEventos"
-				uri="cxf:bean:ServicoEnviarLoteEventosEndpoint?dataFormat=MESSAGE" />
+			<log id="_logEnviandoLoteXMLEventosAdmissao" message="Enviando Lote Eventos Admissão [Lote: ${file:name}]" />
+<!-- 			<to id="_toCXFServicoEnviarLoteEventos" -->
+<!-- 				uri="cxf:bean:ServicoEnviarLoteEventosEndpoint?dataFormat=MESSAGE" /> -->
 		</route>
-		<route autoStartup="false" id="_criaTabelaLotesXMLEventosAdmissaoRoute">
-			<from id="_fromTimer" uri="timer:foo?repeatCount=1" />
-			<log id="_logCriandoTabelaLotesXMLEventosAdmissao" message="Criando a tabela de Lotes Eventos Admissão" />
-			<to id="_toSQLCriaTabelaLotesXMLEventosAdmissao" uri="sql:{{sql.createTableLotesXMLEventosAdmissao}}" />
-			<log id="_logTabelaLotesXMLEventosAdmissaoCriadaComSucesso"
-				message="Tabela Lotes Eventos Admissão criada com sucesso!" />
-		</route>
+		<!-- <route autoStartup="false" id="_criaTabelaLotesXMLEventosAdmissaoRoute"> -->
+		<!-- <from id="_fromTimer" uri="timer:foo?repeatCount=1" /> -->
+		<!-- <log id="_logCriandoTabelaLotesXMLEventosAdmissao" message="Criando 
+			a tabela de Lotes Eventos Admissão" /> -->
+		<!-- <to id="_toSQLCriaTabelaLotesXMLEventosAdmissao" uri="sql:{{sql.createTableLotesXMLEventosAdmissao}}" 
+			/> -->
+		<!-- <log id="_logTabelaLotesXMLEventosAdmissaoCriadaComSucesso" -->
+		<!-- message="Tabela Lotes Eventos Admissão criada com sucesso!" /> -->
+		<!-- </route> -->
 	</camelContext>
 </beans>
