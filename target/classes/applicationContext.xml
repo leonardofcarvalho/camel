@@ -108,7 +108,7 @@
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="org.h2.Driver" />
-		<property name="url" value="jdbc:h2:C:/esocial/esocial" />
+		<property name="url" value="jdbc:h2:/home/leonardocarvalho/temp/banco/esocial" />
 		<property name="username" value="sa" />
 		<property name="password" value="" />
 	</bean>
@@ -142,6 +142,8 @@
 			location="classpath:config.properties" propertiesParserRef="jasypt" />
 		<route id="_geraLoteEventosAdmissaoRoute">
 			<from id="_fromEntradaXMLEventosAdmissao" uri="file:{{file.directory}}/EntradaXMLEventosAdmissao" />
+			<to id="_toSQLCriaTabelaLotesXMLEventosAdmissao" uri="sql:{{sql.dropTableLotesXMLEventosAdmissao}}" />
+			<to id="_toSQLCriaTabelaLotesXMLEventosAdmissao" uri="sql:{{sql.createTableLotesXMLEventosAdmissao}}"/>
 			<enrich id="_enrichXMLEventosAdmissao">
 				<constant>direct:enrichXMLEventosAdmissaoRoute</constant>
 			</enrich>
@@ -170,7 +172,7 @@
 					<simple>EventosAdmissaoLote-${date:now:yyyyMMdd}-${header.CamelSplitIndex}.xml</simple>
 				</setHeader>
 				<to id="_toLotesXMLEventosAdmissao" uri="file:{{file.directory}}/LotesXMLEventosAdmissao" />
-			</split>
+			</split> 
 		</route>
 		<route id="_assinaLoteXMLEventosAdmissaoRoute">
 			<from id="_fromLotesXMLEventosAdmissao" uri="file:{{file.directory}}/LotesXMLEventosAdmissao" />
@@ -196,8 +198,8 @@
 			</wireTap>
 			<to id="_toFreemarkerEnviaLoteSOAPRequestTemplate" uri="freemarker:EnviaLoteSOAPRequestTemplate.ftl" />
 			<log id="_logEnviandoLoteXMLEventosAdmissao" message="Enviando Lote Eventos Admissão [Lote: ${file:name}]" />
-<!-- 			<to id="_toCXFServicoEnviarLoteEventos" -->
-<!-- 				uri="cxf:bean:ServicoEnviarLoteEventosEndpoint?dataFormat=MESSAGE" /> -->
+			<to id="_toCXFServicoEnviarLoteEventos"
+				uri="cxf:bean:ServicoEnviarLoteEventosEndpoint?dataFormat=MESSAGE" />
 		</route>
 		<!-- <route autoStartup="false" id="_criaTabelaLotesXMLEventosAdmissaoRoute"> -->
 		<!-- <from id="_fromTimer" uri="timer:foo?repeatCount=1" /> -->
