@@ -134,10 +134,10 @@
 	</bean>
 
 	<cxf:cxfEndpoint
-		address="http://localhost:8080/PoCFuseTSE-eSocial-WS/ServicoEnviarLoteEventos?wsdl"
+		address="http://localhost:8080/esocial-ws/ServicoEnviarLoteEventos?wsdl"
 		id="ServicoEnviarLoteEventosEndpoint" />
 
-	<camelContext id="camelContext-PoCFuseTSE-eSocial" xmlns="http://camel.apache.org/schema/spring">
+	<camelContext id="camelContext-eSocial" xmlns="http://camel.apache.org/schema/spring" trace="true">
 		<propertyPlaceholder id="properties"
 			location="classpath:config.properties" propertiesParserRef="jasypt" />
 		<route id="_geraLoteEventosAdmissaoRoute">
