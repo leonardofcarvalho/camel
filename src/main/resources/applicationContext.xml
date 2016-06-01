@@ -101,9 +101,7 @@
 			<setHeader headerName="eventoId" id="_setEventoId">
 				<xpath resultType="java.lang.String">eSocial/evtAdmissao/@id</xpath>
 			</setHeader>
-			<enrich strategyRef="aggregatorStrategy" id="_enrichXMLAssinaEventoAdmissao">
-				<simple>direct:assinaXMLAssinaEventoAdmissaoRoute</simple>
-			</enrich>
+			<to id="_toControlaAssinaturaXMLEventoAdmissao" uri="direct:assinaXMLAssinaEventoAdmissaoRoute" />
 			<convertBodyTo id="_convertBodyToString" type="java.lang.String" />
 			<to id="_toFreeMarkerEventosAdmissao" uri="freemarker:EventosAdmissao.ftl" />
 		</route>
@@ -120,14 +118,14 @@
 
 		<route id="_geraLoteXMLEventosAdmissaoRoute">
 			<from id="_fromEntradaXMLEventosAdmissaoRoute" uri="direct:geraLoteXMLEventosAdmissaoRoute" />
-			<aggregate strategyRef="aggregatorStrategy" completionSize="50" completionTimeout="3000">
+			<aggregate strategyRef="aggregatorStrategy" completionSize="50"
+				completionTimeout="3000">
 				<correlationExpression>
 					<simple>header.grupo</simple>
 				</correlationExpression>
 				<log id="_logSplitXMLLoteEventosAdmissao" message="Gerando lote [Número:${header.CamelAggregatedIndex}]" />
 				<to id="_toFreeMarkerEnvioLoteEventosAdmissao" uri="freemarker:EnvioLoteEventosAdmissao.ftl" />
-				<!-- <to id="_to1" uri="validator:XSD/Envio/EnvioLoteEventos-v1_1_0.xsd" 
-					/> -->
+				<!-- to id="_to1" uri="validator:XSD/Envio/EnvioLoteEventos-v1_1_0.xsd"/--> 
 				<setHeader headerName="CamelFileName" id="_setHeaderCamelFileName">
 					<simple>EventosAdmissaoLote-${date:now:yyyyMMddHHmmss.SSS}.xml
 					</simple>
@@ -136,9 +134,6 @@
 					<to id="_toLotesXMLEventosAdmissao" uri="file:{{file.directory}}/LotesXMLEventosAdmissao" />
 					<to id="_toAMQLOTESESOCIAL" uri="activemq:queue:LOTES_ESOCIAL" />
 				</multicast>
-				<!-- <setHeader headerName="eventoID"> -->
-				<!-- <simple>'${file:name}'</simple> -->
-				<!-- </setHeader> -->
 			</aggregate>
 		</route>
 
