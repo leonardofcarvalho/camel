@@ -30,8 +30,7 @@
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="org.h2.Driver" />
-		<property name="url"
-			value="jdbc:h2:/home/leonardocarvalho/temp/banco/esocial;AUTO_SERVER=TRUE" />
+		<property name="url" value="jdbc:h2:c:/esocial/esocial;AUTO_SERVER=TRUE" />
 		<property name="username" value="sa" />
 		<property name="password" value="" />
 	</bean>
@@ -119,13 +118,14 @@
 		<route id="_geraLoteXMLEventosAdmissaoRoute">
 			<from id="_fromEntradaXMLEventosAdmissaoRoute" uri="direct:geraLoteXMLEventosAdmissaoRoute" />
 			<aggregate strategyRef="aggregatorStrategy" completionSize="50"
-				completionTimeout="3000">
+				completionTimeout="10000" parallelProcessing="true">
 				<correlationExpression>
 					<simple>header.grupo</simple>
 				</correlationExpression>
-<!-- 				<log id="_logSplitXMLLoteEventosAdmissao" message="Gerando lote [Número:${header.CamelAggregatedIndex}]" /> -->
+				<!-- <log id="_logSplitXMLLoteEventosAdmissao" message="Gerando lote 
+					[Número:${header.CamelAggregatedIndex}]" /> -->
 				<to id="_toFreeMarkerEnvioLoteEventosAdmissao" uri="freemarker:EnvioLoteEventosAdmissao.ftl" />
-				<to id="_to1" uri="validator:XSD/Envio/EnvioLoteEventos-v1_1_0.xsd"/>
+				<to id="_to1" uri="validator:XSD/Envio/EnvioLoteEventos-v1_1_0.xsd" />
 				<setHeader headerName="CamelFileName" id="_setHeaderCamelFileName">
 					<simple>EventosAdmissaoLote-${date:now:yyyyMMddHHmmss.SSS}.xml
 					</simple>
@@ -155,7 +155,10 @@
 			<convertBodyTo type="java.lang.String" />
 			<split id="_splitEventosAdmissao" strategyRef="aggregatorStrategy"
 				streaming="true">
-				<tokenize token="eSocial" xml="true" />
+				<tokenize token="eSocial" xml="true"/>
+				<setHeader headerName="grupo">
+					<simple>random(1,5)</simple>
+				</setHeader>
 				<wireTap id="_wireTapGravaEnventosDataBase" uri="sql:{{sql.insertTableLotesXMLEventosAdmissao}}">
 					<setHeader headerName="eventoID" id="_setEventoIdCarga">
 						<xpath resultType="java.lang.String">eSocial/evtAdmissao/@id</xpath>
