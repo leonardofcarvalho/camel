@@ -113,7 +113,7 @@
 				<simple>false</simple>
 			</setHeader>
 			<to id="_toAssinaXMLEventoAdmissao"
-				uri="xmlsecurity:sign://detached?keyAccessor=#signatureAccessor&amp;plainText=true&amp;prefixForXmlSignatureNamespace=&amp;xpathsToIdAttributes=#xpathsToIdAttributesBean&amp;schemaResourceUri=Evento.xsd&amp;omitXmlDeclaration=true" />
+				uri="xmlsecurity:sign://detached?keyAccessor=#signatureAccessor&amp;prefixForXmlSignatureNamespace=&amp;xpathsToIdAttributes=#xpathsToIdAttributesBean&amp;schemaResourceUri=Evento.xsd&amp;omitXmlDeclaration=true" />
 		</route>
 
 		<route id="_geraLoteXMLEventosAdmissaoRoute">
@@ -123,7 +123,7 @@
 				<correlationExpression>
 					<simple>header.grupo</simple>
 				</correlationExpression>
-				<log id="_logSplitXMLLoteEventosAdmissao" message="Gerando lote [Número:${header.CamelAggregatedIndex}]" />
+<!-- 				<log id="_logSplitXMLLoteEventosAdmissao" message="Gerando lote [Número:${header.CamelAggregatedIndex}]" /> -->
 				<to id="_toFreeMarkerEnvioLoteEventosAdmissao" uri="freemarker:EnvioLoteEventosAdmissao.ftl" />
 				<to id="_to1" uri="validator:XSD/Envio/EnvioLoteEventos-v1_1_0.xsd"/>
 				<setHeader headerName="CamelFileName" id="_setHeaderCamelFileName">
