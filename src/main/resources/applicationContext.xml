@@ -79,7 +79,7 @@
 			location="classpath:config.properties" propertiesParserRef="jasypt" />
 		<route id="_geraLoteEventosAdmissaoRoute">
 			<from id="_fromEntradaBancoXMLEventosAdmissao"
-				uri="sql:{{sql.selectTableLotesXMLEventosAdmissao}}?onConsume={{sql.updateTableLotesXMLEventosAdmissao}}" />
+				uri="sql:{{sql.selectTableLotesXMLEventosAdmissao}}?onConsume={{sql.updateTableLotesXMLEventosAdmissao}}&amp;consumer.delay=3000" />
 			<setHeader headerName="eventoID">
 				<simple>${body[id]}</simple>
 			</setHeader>
@@ -113,7 +113,7 @@
 				<simple>false</simple>
 			</setHeader>
 			<to id="_toAssinaXMLEventoAdmissao"
-				uri="xmlsecurity:sign://detached?keyAccessor=#signatureAccessor&amp;plainText=true&amp;prefixForXmlSignatureNamespace=&amp;xpathsToIdAttributes=#xpathsToIdAttributesBean&amp;schemaResourceUri=Evento.xsd" />
+				uri="xmlsecurity:sign://detached?keyAccessor=#signatureAccessor&amp;plainText=true&amp;prefixForXmlSignatureNamespace=&amp;xpathsToIdAttributes=#xpathsToIdAttributesBean&amp;schemaResourceUri=Evento.xsd&amp;omitXmlDeclaration=true" />
 		</route>
 
 		<route id="_geraLoteXMLEventosAdmissaoRoute">
@@ -125,7 +125,7 @@
 				</correlationExpression>
 				<log id="_logSplitXMLLoteEventosAdmissao" message="Gerando lote [Número:${header.CamelAggregatedIndex}]" />
 				<to id="_toFreeMarkerEnvioLoteEventosAdmissao" uri="freemarker:EnvioLoteEventosAdmissao.ftl" />
-				<!-- to id="_to1" uri="validator:XSD/Envio/EnvioLoteEventos-v1_1_0.xsd"/--> 
+				<to id="_to1" uri="validator:XSD/Envio/EnvioLoteEventos-v1_1_0.xsd"/>
 				<setHeader headerName="CamelFileName" id="_setHeaderCamelFileName">
 					<simple>EventosAdmissaoLote-${date:now:yyyyMMddHHmmss.SSS}.xml
 					</simple>
